@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Service\" />
+    <None Remove="AWSSDK.DynamoDBv2" />
+    <None Remove="Newtonsoft.Json" />
+    <None Remove="Views\Policy\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Service\" />
+    <Folder Include="Views\Policy\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+</Project>

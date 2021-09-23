@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container">
+    <h1 class="mt-5">All controls</h1>
+
+    <p>
+        <table id="allPolicies" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Standard</th>
+                    <th>Category</th>
+                    <th>Owner</th>
+                    <th>Level</th>
+                    <th>Requirement</th>
+                    <th>Mechanism</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </p>
+
+    
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetAllPolicies",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: OnSuccess,
+                failure: function (response) {
+                    console.log(response);
+                    alert(response.d);
+                },
+                error: function (response) {
+                    console.log(response);
+                    alert(response.d);
+                }
+            });
+
+        });
+
+        function OnSuccess(response) {
+
+            console.log(response);
+            $("#allPolicies").DataTable(
+                {
+                    bLengthChange: true,
+                    bFilter: true,
+                    bSort: true,
+                    bPaginate: true,
+                    data: response,
+                    columns: [
+                        {
+                            'data': 'controlId',
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    data = '<a href="/policy?controlId=' + data + '">' + data + '</a>';
+                                }
+
+                                return data;
+                            }
+                        },
+                        { 'data': 'standard' },
+                        { 'data': 'category' },
+                        { 'data': 'owner' },
+                        { 'data': 'level' },
+                        { 'data': 'requirement' },
+                        { 'data': 'mechanism' }
+                    ]
+                });
+        };
+    </script>
+}
