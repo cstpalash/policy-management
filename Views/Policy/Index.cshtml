@@ -4,5 +4,16 @@
 }
 
 <div class="container">
-    <h1 class="mt-5">@Model.ControlId</h1>
+    <h1 class="mt-5"><i class="bi bi-code-slash"></i> <a href="@Model.Repo" target="_blank">@Model.ControlId</a></h1>
+    <h5>
+        <span class="badge bg-primary">@Model.Level</span>
+        <span class="badge bg-info">@Model.Category</span>
+        <span class="badge bg-secondary">@Model.Owner</span>
+    </h5>
+    <hr/>
+    <div class="row">
+        <div class="col-md-12">
+            <p class="h4">@Model.Requirement</p>
+        </div>
+    </div>
 </div>

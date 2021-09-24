@@ -11,5 +11,6 @@ namespace policy.management.web.Models
         public string Requirement { get; set; }
         public string Mechanism { get; set; }
         public bool GoldProd { get; set; }
+        public string Repo { get; set; }
     }
 }
