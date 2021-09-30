@@ -10,10 +10,212 @@
         <span class="badge bg-info">@Model.Category</span>
         <span class="badge bg-secondary">@Model.Owner</span>
     </h5>
-    <hr/>
+    <hr />
     <div class="row">
         <div class="col-md-12">
             <p class="h4">@Model.Requirement</p>
         </div>
     </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Compliance report</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table id="complianceReport" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Provider</th>
+                        <th rowspan="2">Resource Type</th>
+                        <th colspan="4">Pre Provision</th>
+                        <th colspan="4">Continuous Compliance</th>
+                    </tr>
+                    <tr>
+                        <th>Pass</th>
+                        <th>Fail</th>
+                        <th>Total</th>
+                        <th>% Pass</th>
+                        <th>Pass</th>
+                        <th>Fail</th>
+                        <th>Total</th>
+                        <th>% Pass</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Chaos Engineering report - AWS S3</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="chaosEngineeringAwsS3" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Valid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                type: "POST",
+                url: "/Policy/GetComplianceReport?controlId=@Model.ControlId",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: OnSuccess,
+                failure: function (response) {
+                    console.log(response);
+                    alert(response.d);
+                },
+                error: function (response) {
+                    console.log(response);
+                    alert(response.d);
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "/Policy/GetChaosEngineeringReport?controlId=@Model.ControlId&source=aws.s3",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: OnSuccessChaosEngineering,
+                failure: function (response) {
+                    console.log(response);
+                    alert(response.d);
+                },
+                error: function (response) {
+                    console.log(response);
+                    alert(response.d);
+                }
+            });
+
+        });
+
+        function OnSuccessChaosEngineering(response) {
+
+            $("#chaosEngineeringAwsS3").DataTable({
+                bLengthChange: true,
+                bFilter: true,
+                bSort: true,
+                bPaginate: true,
+                data: response,
+                order: [[0, "desc"]],
+                columns: [
+                    {
+                        'data': 'time',
+                    },
+                    { 'data': 'status' },
+                    {
+                        'data': 'valid',
+                        "render": function (data, type, row, meta) {
+                            if (type == 'display') {
+                                if (data == true) {
+                                    data = '<span class="badge rounded-pill bg-success">Ok</span>';
+                                }
+                                else {
+                                    data = "Processing..."
+                                }
+                            }
+
+                            return data;
+                        }
+                    }
+                ]
+            });
+        }
+
+        function OnSuccess(response) {
+
+            $("#complianceReport").DataTable(
+                {
+                    bLengthChange: true,
+                    bFilter: false,
+                    bSort: false,
+                    bPaginate: false,
+                    bInfo: false,
+                    data: response,
+                    columns: [
+                        {
+                            'data': 'provider',
+                        },
+                        { 'data': 'resourceType' },
+                        { 'data': 'preProvisionCompliant' },
+                        { 'data': 'preProvisionNonCompliant' },
+                        { 'data': 'preProvisionTotal' },
+                        {
+                            'data': 'preProvisionCompliancePercentage',
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display' && data > 0) {
+                                    data = '<span class="badge rounded-pill bg-warning">' + data + '</span>';
+                                }
+
+                                return data + ' %';
+                            }
+                        },
+                        {
+                            'data': 'continuousCompliant',
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display' && data > 0) {
+
+                                    data = '<span class="badge rounded-pill bg-success">' + data + '</span>';
+                                }
+
+                                return data;
+                            }
+                        },
+                        {
+                            'data': 'continuousNonCompliant',
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display' && data > 0) {
+                                    data = '<span class="badge rounded-pill bg-danger">' + data + '</span>';
+                                }
+
+                                return data;
+                            }
+                        },
+                        {
+                            'data': 'continuousTotal',
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display' && data > 0) {
+                                    data = '<span class="badge rounded-pill bg-warning">' + data + '</span>';
+                                }
+
+                                return data;
+                            }
+                        },
+                        {
+                            'data': 'continuousCompliancePercentage',
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display' && data > 0) {
+                                    data = '<span class="badge rounded-pill bg-info">' + data + '</span>';
+                                }
+
+                                return data + ' %';
+                            }
+                        }
+                    ]
+                });
+        };
+    </script>
+}

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using policy.management.web.Models;
 using policy.management.web.Service;
 
 namespace policy.management.web.Controllers
@@ -22,11 +23,27 @@ namespace policy.management.web.Controllers
             _policyService = policyService;
 
         }
-        // GET: /<controller>/
+
         public async Task<IActionResult> Index(string controlId)
         {
             var model = await _policyService.GetPolicy(controlId);
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GetComplianceReport(string controlId)
+        {
+            var complianceReport = await _policyService.GetComplianceReport(controlId);
+            
+            return Json(complianceReport);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GetChaosEngineeringReport(string controlId, string source)
+        {
+            var report = await _policyService.GetChaosEngineeringReport(controlId, source);
+
+            return Json(report);
         }
     }
 }
